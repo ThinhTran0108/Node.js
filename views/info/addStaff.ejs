@@ -1,0 +1,96 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navigation.ejs') %>
+    <main>
+        <% if (errorMessage) { %>
+            <div class="user-message user-message--error"><%= errorMessage %></div>
+        <% } %>
+        <form class="product-form" action="/addstaff" method="POST" enctype="multipart/form-data">
+            <div class='card__image c-avatar'>
+                <img class='c-avatar__image' src='https://cdn1.iconfinder.com/data/icons/avatar-2-2/512/Employee-512.png' alt=''>
+                <span class='c-avatar__status offline } %>'></span>
+            </div>
+            <div class="form-control">
+                <input type="hidden" name="companyId" id="companyId" value="<% if (hasError) { %><%= staff.companyId %><% } %>" readonly>
+            </div>
+
+
+            <div class="form-control">
+                <label for="name">Họ tên nhân viên</label>
+                <input 
+                    class="<%= validationErrors.find(e => e.param === 'name') ? 'invalid' : '' %>" 
+                    type="text" 
+                    name="name" 
+                    id="name"
+                    value="<% if (hasError) { %><%= staff.name %><% } %>">
+            </div>
+            <div class="form-control">
+                <label for="image">Hình ảnh</label>
+                <input type="file" name="image" id="image">
+            </div>
+            <div class="form-control">
+                <label for="role">Chức vụ</label>
+                <input 
+                class="<%= validationErrors.find(e => e.param === 'role') ? 'invalid' : '' %>" 
+                type="text" 
+                name="role" id="role" 
+                value="<% if (hasError) { %><%= staff.role %><% } %>">
+            </div>
+            <div class="form-control">
+                <label for="status">Trạng thái</label>
+                <input type="text" name="status" id="status" value="--" readonly>
+            </div>
+            <div class="form-control">
+                <label for="doB">Ngày sinh</label>
+                <input 
+                    class="<%= validationErrors.find(e => e.param === 'doB') ? 'invalid' : '' %>" 
+                    type="date" 
+                    name="doB" 
+                    id="doB"
+                    value="<% if (hasError) { %><%= staff.doB %><% } %>">
+            </div>
+            <div class="form-control">
+                <label for="salaryScale">Hệ số lương</label>
+                <input 
+                class="<%= validationErrors.find(e => e.param === 'salaryScale') ? 'invalid' : '' %>" 
+                type="number" 
+                name="salaryScale" 
+                id="salaryScale" 
+                step="0.01"
+                value="<% if (hasError) { %><%= staff.salaryScale %><% } %>">
+            </div>
+            <div class="form-control">
+                <label for="startDate">Ngày bắt đầu làm việc</label>
+                <input 
+                    class="<%= validationErrors.find(e => e.param === 'startDate') ? 'invalid' : '' %>" 
+                    type="date" 
+                    name="startDate" 
+                    id="startDate"
+                    value="<% if (hasError) { %><%= staff.startDate %><% } %>">
+            </div>
+            <div class="form-control">
+                <label for="department">Khoa phòng</label>
+                <input 
+                    class="<%= validationErrors.find(e => e.param === 'department') ? 'invalid' : '' %>" 
+                    type="text" 
+                    name="department" 
+                    id="department"
+                    value="<% if (hasError) { %><%= staff.department %><% } %>">
+            </div>
+            <div class="form-control">
+                <label for="annualLeave">Số ngày phép còn lại</label>
+                <input 
+                    class="<%= validationErrors.find(e => e.param === 'annualLeave') ? 'invalid' : '' %>" 
+                    type="number" 
+                    name="annualLeave" 
+                    id="annualLeave" 
+                    step="0.125"
+                    value="<% if (hasError) { %><%= staff.annualLeave %><% } %>">
+            </div>
+            <div class="card__actions">
+                <button class="btn" type="submit">Thêm</button>
+                <a class="btn" href="/">Quay lại</a>
+            </div>
+            
+        </form>
+    </main>
+<%- include('../includes/end.ejs') %>

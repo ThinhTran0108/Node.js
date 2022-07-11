@@ -1,0 +1,129 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navigation.ejs') %>
+    <main>
+        <div class="grid">
+            <article class="card product-item">
+                <form class="product-form" action="/timekeeping/registryleave" method="POST">
+                    <div class='card__image c-avatar'>
+                        <img class='c-avatar__image' src='/<%= staff.imageUrl %>' alt='<%= staff.name %>'>
+                        <span class='c-avatar__status <% if(staff.status == "Đang làm việc") { %>online<% } else { %>offline<% } %>'></span>
+                    </div>
+                    <!--Input chỉ để hiển thị-->
+                    <div class="card__status clearfix">
+                        <input type="text" name="status" id="status" value="<%=staff.status ? staff.status : '--'%>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="companyId">Mã nhân viên</label>
+                        <input type="text" name="companyId" id="companyId" value="<%= staff.companyId %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="name">Họ tên nhân viên</label>
+                        <input type="text" name="name" id="name" value="<%= staff.name %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="annualLeave">Số ngày phép của năm</label>
+                        <input type="number" name="annualLeave" id="annualLeave" value="<%= staff.annualLeave %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="salaryScale">Hệ số lương</label>
+                        <input type="number" name="salaryScale" id="salaryScale" value="<%= staff.salaryScale %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="remainingDays">Số ngày phép còn lại</label>
+                        <input type="number" name="remainingDays" id="remainingDays" value="<%= data.leave.length >0 ? data.leave[data.leave.length -1].remainingDays : staff.annualLeave %>" readonly>
+                    </div>
+                    <!--Khoá form đăng kí nếu dữ liệu remainingsDay=0 -->
+                    <% const remaining =  data.leave.length >0 ? data.leave[data.leave.length-1].remainingDays : staff.annualLeave;
+                    if (remaining <=0) { %>
+                        <h2 class ="btn danger">Số ngày phép còn lại là 0. Bạn không thể đăng kí!</h2>
+                    <% } else { %>
+                        <!--Input của post controller-->
+                        <div class="form-control">
+                            <input type="hidden" name="staffId" value="<%= staff._id %>">
+                        </div>
+                        <div class="form-control">
+                            <label for="startLeave">Ngày bắt đầu nghỉ</label>
+                            <input 
+                                class="<%= validationErrors.find(e => e.param === 'startLeave') ? 'invalid' : '' %>"
+                                type="date" 
+                                name="startLeave" 
+                                id="startLeave" 
+                                value="<%= oldInput.startLeave %>">
+                        </div>
+                        <div class="form-control">
+                            <label for="endLeave">Ngày kết thúc nghỉ</label>
+                            <input 
+                                class="<%= validationErrors.find(e => e.param === 'endLeave') ? 'invalid' : '' %>"
+                                type="date" 
+                                name="endLeave" 
+                                id="endLeave" 
+                                value="<%= oldInput.endLeave %>">
+                        </div>
+                        <div class="form-control">
+                            <label for="leaveHours">Số giờ sẽ nghỉ mỗi ngày</label>
+                            <select  
+                                class="<%= validationErrors.find(e => e.param === 'leaveHours') ? 'invalid' : '' %>"
+                                name="leaveHours" 
+                                id="leaveHours"
+                                value="<%= oldInput.leaveHours %>">
+                                <option value="8" selected>8 giờ (1 ngày)</option>
+                                <option value="7">7 giờ (0.875 ngày)</option>
+                                <option value="6">6 giờ (0.75 ngày)</option>
+                                <option value="5">5 giờ (0.625 ngày)</option>
+                                <option value="4">4 giờ (0.5 ngày)</option>
+                                <option value="3">3 giờ (0.375 ngày)</option>
+                                <option value="2">2 giờ (0.25 ngày)</option>
+                                <option value="1">1 giờ (0.125 ngày)</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="reason">Lý do</label>
+                            <textarea  
+                                class="<%= validationErrors.find(e => e.param === 'reason') ? 'invalid' : '' %>"
+                                type="text" 
+                                name="reason" 
+                                id="reason" 
+                                rows="5" 
+                                value="<%= oldInput.reason %>"></textarea>
+                        </div>
+                        <% if (errorMessage) { %>
+                            <div class="user-message user-message--error"><%= errorMessage %></div>
+                        <% } %>
+                        <div class="card__actions">
+                            <button class="btn" type="submit">Đăng ký</button>
+                        </div>
+                    <% } %>
+                </form>
+            </article>
+            <article class="card product-table">
+                <h2>Dữ liệu đăng kí nghỉ phép</h2> 
+                <div class="table-wrapper">
+                    <table class="fl-table">
+                        <thead>
+                            <tr>
+                                <th>Ngày bắt đầu</th>
+                                <th>Ngày kết thúc</th>
+                                <th>Lý do</th>
+                                <th>Số giờ nghỉ mỗi ngày</th>
+                                <th>Số ngày phép còn lại</th>
+                            </tr>
+                        </thead>
+                            <tbody>
+                            <% if (data.leave.length >0) { 
+                                for (let dl of data.leave) { 
+                            %>
+                                <tr>
+                                    <td><%= new Date(dl.startLeave).toLocaleDateString('en-GB') %></td>
+                                    <td><%= new Date(dl.endLeave).toLocaleDateString('en-GB') %></td>
+                                    <td><%= dl.reason %></td>
+                                    <td><%= dl.leaveHours %></td>
+                                    <td><%= dl.remainingDays%></td>
+                                </tr>
+                            <% }} %>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </div>
+    </main>
+<%- include('../includes/end.ejs') %>

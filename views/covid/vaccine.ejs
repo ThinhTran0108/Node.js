@@ -1,0 +1,101 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navigation.ejs') %>
+    <main>
+        <div class="grid">
+            <article class="card product-item">
+                <form class="product-form" action="/covid/vaccine" method="POST">
+                    <div class='card__image c-avatar'>
+                        <img class='c-avatar__image' src='/<%= staff.imageUrl %>' alt='<%= staff.name %>'>
+                        <span class='c-avatar__status <% if(staff.status == "Đang làm việc") { %>online<% } else { %>offline<% } %>'></span>
+                    </div>
+                    <!--Input chỉ để hiển thị-->
+                    <div class="card__status clearfix">
+                        <input type="text" name="status" id="status" value="<%= staff.status %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="companyId">Mã nhân viên</label>
+                        <input type="text" name="companyId" id="companyId" value="<%= staff.companyId %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="name">Họ tên nhân viên</label>
+                        <input type="text" name="name" id="name" value="<%= staff.name %>" readonly>
+                    </div>
+                     <!--Input của post controller-->
+                    <% if (!isAdmin) { %>
+                        <div class="form-control">
+                            <input type="hidden" name="staffId" id="staffId" value="<%= staff._id %>">
+                        </div>
+                        <div class="form-control">
+                            <label for="dateVac_1">Ngày tiêm mũi 1</label>
+                            <input 
+                                class="<%= validationErrors.find(e => e.param === 'dateVac_1') ? 'invalid' : '' %>"
+                                type="date" 
+                                name="dateVac_1" 
+                                id="dateVac_1" 
+                                value="<%= data.vaccine.dateVac_1 ? moment(data.vaccine.dateVac_1).utc().format('YYYY-MM-DD') : null%>">
+                        </div>
+                        <div class="form-control">
+                            <label for="vac_1">Tên vaccine mũi 1</label>
+                            <input 
+                                class="<%= validationErrors.find(e => e.param === 'vac_1') ? 'invalid' : '' %>"
+                                type="text" 
+                                name="vac_1" 
+                                id="vac_1" 
+                                value="<%=data.vaccine ? data.vaccine.vac_1 : null%>">
+                        </div>
+                        <div class="form-control">
+                            <label for="dateVac_2">Ngày tiêm mũi 2</label>
+                            <input 
+                                class="<%= validationErrors.find(e => e.param === 'dateVac_2') ? 'invalid' : '' %>"
+                                type="date" 
+                                name="dateVac_2" 
+                                id="dateVac_2" 
+                                value="<%= data.vaccine.dateVac_2 ? moment(data.vaccine.dateVac_2).utc().format('YYYY-MM-DD') : null%>">
+                        </div>
+                        <div class="form-control">
+                            <label for="secondVaccine">Tên vaccine mũi 2</label>
+                            <input 
+                                class="<%= validationErrors.find(e => e.param === 'vac_2') ? 'invalid' : '' %>"
+                                type="text" 
+                                name="vac_2" 
+                                id="vac_2" 
+                                value="<%= data.vaccine ? data.vaccine.vac_2 : null%>">
+                        </div>
+                        <% if (errorMessage) { %>
+                            <div class="user-message user-message--error"><%= errorMessage %></div>
+                        <% } %>
+                        <div class="card__actions">
+                            <button class="btn" type="submit">Cập nhật</button>
+                        </div>
+                    <% } %>
+                </form>
+            </article>
+            <article class="card product-table">
+                <h2>Dữ liệu Vaccine</h2> 
+                <div class="table-wrapper">
+                    <table class="fl-table">
+                        <thead>
+                            <tr>
+                                <th>Ngày tiêm mũi 1</th>
+                                <th>Tên vaccine mũi 1</th>
+                                <th>Ngày tiêm mũi 2</th>
+                                <th>Tên vaccine mũi 2</th>
+                            </tr>
+                        </thead>
+                            <tbody>
+                            <% if (data.vaccine.dateVac_1 && data.vaccine.dateVac_2) {  %>
+                                <tr>
+                                    <td><%= new Date(data.vaccine.dateVac_1).toLocaleDateString('en-GB') %></td>
+                                    <td><%= data.vaccine.vac_1 %></td>
+                                    <td><%= new Date(data.vaccine.dateVac_2).toLocaleDateString('en-GB') %></td>
+                                    <td><%= data.vaccine.vac_2 %></td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </div>
+
+    </main>
+<%- include('../includes/end.ejs') %>

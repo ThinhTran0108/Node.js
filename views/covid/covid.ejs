@@ -1,0 +1,91 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navigation.ejs') %>
+    <main>
+        <% if (isAdmin) { %>
+            <% if (staffs.length > 0) { %> 
+                <div class="grid">
+                    <% for (let staff of staffs) { %>
+                        <article class="card product-item">
+                            <header class="card__header">
+                                <h1 class="product__title"><%= staff.name %></h1>
+                            </header>
+                            <hr>
+                            <div class='card__image c-avatar'>
+                                <img class='c-avatar__image' src='/<%= staff.imageUrl %>' alt='<%= staff.name %>'>
+                                <span class='c-avatar__status <% if(staff.status == "Đang làm việc") { %>online<% } else { %>offline<% } %>'></span>
+                            </div>
+                            <div class="card__status clearfix">
+                                <input type="text" name="status" id="status" value="<%= staff.status %>" readonly>
+                            </div>
+                            <div class="card__content clearfix">
+                                <label for="companyId">Mã nhân viên</label>
+                                <input type="text" name="companyId" id="companyId" value="<%= staff.companyId %>" readonly>
+                            </div>
+                            <div class="card__content clearfix">
+                                <label for="doB">Ngày sinh</label>
+                                <input type="date" name="doB" id="doB" value="<%= moment(staff.doB).utc().format('YYYY-MM-DD') %>" readonly>
+                            </div>
+                            <div class="card__content clearfix">
+                                <label for="department">Khoa phòng</label>
+                                <input type="text" name="department" id="department" value="<%= staff.department %>" readonly>
+                            </div>
+                            <div class="card__actions">
+                                <a href="/covid/bodytemperature/<%= staff.companyId %>" class="btn">Thân nhiệt</a>
+                            </div>
+                            <div class="card__actions">
+                                <a href="/covid/vaccine/<%= staff.companyId %>" class="btn">Vaccine</a>
+                                <a href="/covid/positive/<%= staff.companyId %>" class="btn">Dương tính</a>
+                            </div>
+                            <div class="card__actions">
+                                <a href="/covid/download/<%= staff.companyId %>" class="btn">Download thông tin Covid</a>
+                            </div>
+                        </article>
+                    <% } %>
+                </div>
+            <% } else { %>
+                <h1>Chưa có nhân viên nào, vui lòng thêm nhân viên!</h1>
+                <div class="clearfix">
+                    <a href="/addstaff" class="btn" style="display: flex; justify-content: center; align-items: center; height: 40px; border: 2px solid green; margin: 1rem">Thêm nhân viên</a>
+                </div>
+            <% } %>
+            <div class="clearfix">
+                <a href="/covid/staffs" class="btn" style="display: flex; justify-content: center; align-items: center; height: 40px; border: 2px solid green; margin: 1rem">Xem danh sách tổng hợp nhân viên</a>
+            </div>
+        <% } else { %>
+            <div class="grid">
+                <article class="card product-item">
+                    <header class="card__header">
+                        <h1 class="product__title"><%= staff.name %></h1>
+                    </header>
+                    <hr>
+                    <div class='card__image c-avatar'>
+                        <img class='c-avatar__image' src='/<%= staff.imageUrl %>' alt='<%= staff.name %>'>
+                        <span class='c-avatar__status <% if(staff.status == "Đang làm việc") { %>online<% } else { %>offline<% } %>'></span>
+                    </div>
+                    <div class="card__status clearfix">
+                        <input type="text" name="status" id="status" value="<%= staff.status %>" readonly>
+                    </div>
+                    <div class="card__content clearfix">
+                        <label for="companyId">Mã nhân viên</label>
+                        <input type="text" name="companyId" id="companyId" value="<%= staff.companyId %>" readonly>
+                    </div>
+                    <div class="card__content clearfix">
+                        <label for="doB">Ngày sinh</label>
+                        <input type="date" name="doB" id="doB" value="<%= moment(staff.doB).utc().format('YYYY-MM-DD') %>" readonly>
+                    </div>
+                    <div class="card__content clearfix">
+                        <label for="department">Khoa phòng</label>
+                        <input type="text" name="department" id="department" value="<%= staff.department %>" readonly>
+                    </div>
+                    <div class="card__actions">
+                        <a href="/covid/bodytemperature/<%= staff.companyId %>" class="btn">Thân nhiệt</a>
+                    </div>
+                    <div class="card__actions">
+                        <a href="/covid/vaccine/<%= staff.companyId %>" class="btn">Vaccine</a>
+                        <a href="/covid/positive/<%= staff.companyId %>" class="btn">Dương tính</a>
+                    </div>
+                </article>
+            </div>
+        <% } %>
+    </main>
+<%- include('../includes/end.ejs') %>

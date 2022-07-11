@@ -1,0 +1,15 @@
+<section class="pagination">
+    <% if (currentPage !== 1 && previousPage !== 1) { %>
+        <a href="/workinghours/getworkinginfo/<%= staff.companyId %>?&mode=<%= mode %>&page=1&sort=<%= sort %>&numberOfRow=<%= numberOfRow %>">1</a>
+    <% } %>
+    <% if (hasPreviousPage) { %>
+        <a href="/workinghours/getworkinginfo/<%= staff.companyId %>?mode=<%= mode %>&page=<%= previousPage %>&sort=<%= sort %>&numberOfRow=<%= numberOfRow %>"><%= previousPage %></a>
+    <% } %>
+        <a href="/workinghours/getworkinginfo/<%= staff.companyId %>?mode=<%= mode %>&page=<%= currentPage %>&sort=<%= sort %>&numberOfRow=<%= numberOfRow %>" class="active"><%= currentPage %></a>
+    <% if (hasNextPage) { %>
+        <a href="/workinghours/getworkinginfo/<%= staff.companyId %>?mode=<%= mode %>&page=<%= nextPage %>&sort=<%= sort %>&numberOfRow=<%= numberOfRow %>"><%= nextPage %></a>
+    <% } %>
+    <% if (lastPage !== currentPage && nextPage !== lastPage) { %>
+        <a href="/workinghours/getworkinginfo/<%= staff.companyId %>?mode=<%= mode %>&page=<%= lastPage %>&sort=<%= sort %>&numberOfRow=<%= numberOfRow %>"><%= lastPage %></a>                
+    <% } %>
+</section>

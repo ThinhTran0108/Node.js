@@ -1,0 +1,80 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navigation.ejs') %>
+    <main>
+        
+        <div class="grid">
+            <article class="card product-item">
+                <form class="product-form" action="/covid/bodytemperature" method="POST">
+                    <div class='card__image c-avatar'>
+                        <img class='c-avatar__image' src='/<%= staff.imageUrl %>' alt='<%= staff.name %>'>
+                        <span class='c-avatar__status <% if(staff.status == "Đang làm việc") { %>online<% } else { %>offline<% } %>'></span>
+                    </div>
+                    <!--Input chỉ để hiển thị-->
+                    <div class="card__status clearfix">
+                        <input type="text" name="status" id="status" value="<%= staff.status %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="companyId">Mã nhân viên</label>
+                        <input type="text" name="companyId" id="companyId" value="<%= staff.companyId %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="name">Họ tên nhân viên</label>
+                        <input type="text" name="name" id="name" value="<%= staff.name %>" readonly>
+                    </div>
+                     <!--Input của post controller-->
+                    <% if (!isAdmin) { %>
+                        <div class="form-control">
+                            <input type="hidden" name="staffId" id="staffId" value="<%= staff._id %>">
+                        </div>
+                        <div class="form-control">
+                            <label for="dateTemp">Ngày đo</label>
+                            <input 
+                                class="<%= validationErrors.find(e => e.param === 'dateTemp') ? 'invalid' : '' %>"
+                                type="date" 
+                                name="dateTemp" 
+                                id="dateTemp"
+                                value="<%= oldInput.dateTemp %>">
+                        </div>
+                        <div class="form-control">
+                            <label for="temp">Thân nhiệt</label>
+                            <input 
+                                class="<%= validationErrors.find(e => e.param === 'temp') ? 'invalid' : '' %>"
+                                type="number" 
+                                name="temp" 
+                                id="temp" 
+                                step="0.1"
+                                value="<%= oldInput.temp %>">
+                        </div>
+                        <% if (errorMessage) { %>
+                            <div class="user-message user-message--error"><%= errorMessage %></div>
+                        <% } %>
+                        <div class="card__actions">
+                            <button class="btn" type="submit">Cập nhật</button>
+                        </div>
+                    <% } %>
+                </form>
+            </article>
+            <article class="card product-table">
+                <h2>Dữ liệu thân nhiệt</h2> 
+                <div class="table-wrapper">
+                    <table class="fl-table">
+                        <thead>
+                            <tr>
+                                <th>Ngày đo</th>
+                                <th>Nhiệt độ</th>
+                            </tr>
+                        </thead>
+                            <tbody>
+                            <% if (data.bodyTemp.length >0) { for (let db of data.bodyTemp) { %>
+                                <tr>
+                                    <td><%= new Date(db.dateTemp).toLocaleDateString('en-GB') %></td>
+                                    <td><%= db.temp %></td>
+                                </tr>
+                            <% }} %>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </div>
+    </main>
+<%- include('../includes/end.ejs') %>

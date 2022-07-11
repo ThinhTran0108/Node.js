@@ -1,0 +1,337 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navigation.ejs') %>
+    <main>
+        <div class="grid">
+            <article class="card product-item">
+                <form class="product-form">
+                    <div class='card__image c-avatar'>
+                        <img class='c-avatar__image' src='/<%= staff.imageUrl %>' alt='<%= staff.name %>'>
+                        <span class='c-avatar__status <% if(staff.status == "Đang làm việc") { %>online<% } else { %>offline<% } %>'></span>
+                    </div>
+                    <div class="card__status clearfix">
+                        <input type="text" name="status" id="status" value="<%=staff.status ? staff.status : '--'%>" disabled>
+                    </div>
+                    <div class="form-control">
+                        <label for="companyId">Mã nhân viên</label>
+                        <input type="text" name="companyId" id="companyId" value="<%= staff.companyId %>" disabled>
+                    </div>
+                    <div class="form-control">
+                        <label for="name">Họ tên nhân viên</label>
+                        <input type="text" name="name" id="name" value="<%= staff.name %>">
+                    </div>
+                    <div class="form-control">
+                        <label for="department">Khoa phòng</label>
+                        <input type="text" name="department" id="department" value="<%= staff.department %>" disabled>
+                    </div>
+                    <div class="form-control">
+                        <label for="annualLeave">Số ngày phép của năm</label>
+                        <input type="number" name="annualLeave" id="annualLeave" value="<%= staff.annualLeave %>" disabled>
+                    </div>
+                    <div class="form-control">
+                        <label for="salaryScale">Hệ số lương</label>
+                        <input type="number" name="salaryScale" id="salaryScale" value="<%= staff.salaryScale %>" disabled>
+                    </div>
+                    <% if (!confirmedStatus) { %>
+                        <div class="card__actions">
+                            <a class="btn danger" style="pointer-events: none;" href='' disabled> Dữ liệu chưa được xác nhận bởi quản lý! Số liệu tổng kết theo ngày và lương tháng có thể không chính xác</a>
+                        </div>
+                    <% } %>
+                </form>
+            </article>
+            <article class="card product-table">
+                <% if (mode == 'details') { %>
+                    <h2>Chi tiết chấm công trong ngày%></h2> 
+                    <div class="table-wrapper">
+                        <table class="fl-table">
+                            <thead>
+                                <tr>
+                                    <th>Ngày làm việc</th>
+                                    <th>Nơi làm việc</th>
+                                    <th>Giờ bắt đầu</th>
+                                    <th>Giờ kết thúc</th>
+                                    <th>Số giờ làm 1 lần chấm công</th>
+                                </tr>
+                            </thead>
+                                <tbody>
+                                    <!--Có chọn NGÀY và WORKPLACE xem details-->
+                                    <% if (date && workplace) { %>
+                                        <% for (let dt of details) { %>
+                                            <% if (new Date(dt.date).getTime() == new Date(date).getTime() && dt.workplace.toLowerCase() == workplace.toLowerCase()) { %>
+                                                <tr>
+                                                    <td><%= new Date(dt.date).toLocaleDateString('en-GB') %></td>
+                                                    <td><%= dt.workplace %></td>
+                                                    <td><%= dt.timeStart %></td>
+                                                    <td><%= dt.timeEnd ? dt.timeEnd : '--' %></td>
+                                                    <td><%= dt.timeEnd ? parseFloat(dt.workHours).toFixed(2) : 'chưa kết thúc' %></td>
+                                                </tr>
+                                            <% } %>
+                                        <% } %>
+                                    <!--Có chọn THÁNG và WORKPLACE xem details-->
+                                    <% } else if (month && workplace) { %>
+                                        <% for (let dt of details) { %>
+                                            <% if (dt.monthOfYear == month && dt.workplace.toLowerCase() == workplace.toLowerCase()) { %>
+                                                <tr>
+                                                    <td><%= new Date(dt.date).toLocaleDateString('en-GB') %></td>
+                                                    <td><%= dt.workplace %></td>
+                                                    <td><%= dt.timeStart %></td>
+                                                    <td><%= dt.timeEnd ? dt.timeEnd : '--' %></td>
+                                                    <td><%= dt.timeEnd ? parseFloat(dt.workHours).toFixed(2) : 'chưa kết thúc' %></td>
+                                                </tr>
+                                            <% } %>
+                                        <% } %>
+                                    <!--Chỉ chọn WORKPLACE xem details-->
+                                    <% } else if (workplace) { %>
+                                        <% for (let dt of details) { %>
+                                            <% if (dt.workplace.toLowerCase() == workplace.toLowerCase()) { %>
+                                                <tr>
+                                                    <td><%= new Date(dt.date).toLocaleDateString('en-GB') %></td>
+                                                    <td><%= dt.workplace %></td>
+                                                    <td><%= dt.timeStart %></td>
+                                                    <td><%= dt.timeEnd ? dt.timeEnd : '--' %></td>
+                                                    <td><%= dt.timeEnd ? parseFloat(dt.workHours).toFixed(2) : 'chưa kết thúc' %></td>
+                                                </tr>
+                                            <% } %>
+                                        <% } %>
+                                    <!--Chỉ chọn NGÀY xem details-->
+                                    <% } else if (date) { %>
+                                        <% for (let dt of details) { %>
+                                            <% if (new Date(dt.date).getTime() == new Date(date).getTime()) { %>
+                                                <tr>
+                                                    <td><%= new Date(dt.date).toLocaleDateString('en-GB') %></td>
+                                                    <td><%= dt.workplace %></td>
+                                                    <td><%= dt.timeStart %></td>
+                                                    <td><%= dt.timeEnd ? dt.timeEnd : '--' %></td>
+                                                    <td><%= dt.timeEnd ? parseFloat(dt.workHours).toFixed(2) : 'chưa kết thúc' %></td>
+                                                </tr>
+                                            <% } %>
+                                        <% } %>
+                                    <!--Chỉ chọn THÁNG xem details-->
+                                    <% } else if (month) { %>
+                                        <% for (let dt of details) { %>
+                                            <% if (dt.monthOfYear == month) { %>
+                                                <tr>
+                                                    <td><%= new Date(dt.date).toLocaleDateString('en-GB') %></td>
+                                                    <td><%= dt.workplace %></td>
+                                                    <td><%= dt.timeStart %></td>
+                                                    <td><%= dt.timeEnd ? dt.timeEnd : '--' %></td>
+                                                    <td><%= dt.timeEnd ? parseFloat(dt.workHours).toFixed(2) : 'chưa kết thúc' %></td>
+                                                </tr>
+                                            <% } %>
+                                        <% } %>
+                                    <!--Xem tất cả details-->
+                                    <% } else { %>
+                                        <% for (let dt of details) { %>
+                                            <tr>
+                                                <td><%= new Date(dt.date).toLocaleDateString('en-GB') %></td>
+                                                <td><%= dt.workplace %></td>
+                                                <td><%= dt.timeStart %></td>
+                                                <td><%= dt.timeEnd ? dt.timeEnd : '--' %></td>
+                                                <td><%= dt.timeEnd ? parseFloat(dt.workHours).toFixed(2) : 'chưa kết thúc' %></td>
+                                            </tr>
+                                        <% } %>
+                                    <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+                <% if (mode == 'summary') { %>
+                    <h2>Tổng kết giờ làm</h2> 
+                    <div class="table-wrapper">
+                        <table class="fl-table">
+                            <thead>
+                                <tr>
+                                    <th>Ngày làm việc</th>
+                                    <th>Tổng số giờ làm trong ngày</th>
+                                    <th>Số giờ đăng kí nghỉ</th>
+                                    <th>Số giờ làm thêm</th>
+                                    <th>Số giờ làm thiếu</th>
+                                </tr>
+                            </thead>
+                                <tbody>
+                                <!--Có chọn NGÀY xem summary-->
+                                <% if (date) { %>
+                                    <% for (let dt of summary) { %>
+                                        <% if (new Date(dt.date).getTime() == new Date(date).getTime()) { %>
+                                            <tr>
+                                                <td><%= new Date(dt.date).toLocaleDateString('en-GB') %></td>
+                                                <td><%= parseFloat(dt.workHoursPerDay).toFixed(2) %></td>
+                                                <td><%= dt.leaveHoursPerDay %></td>
+                                                <td><%= parseFloat(dt.overTime).toFixed(2) %></td>
+                                                <td><%= parseFloat(dt.underTime).toFixed(2) %></td>
+                                            </tr>
+                                        <% } %>
+                                    <% } %>
+                                <!--Có chọn THÁNG xem summary-->
+                                <% } else if (month) { %>
+                                    <% for (let dt of summary) { %>
+                                        <% if (dt.monthOfYear == month) { %>
+                                            <tr>
+                                                <td><%= new Date(dt.date).toLocaleDateString('en-GB') %></td>
+                                                <td><%= parseFloat(dt.workHoursPerDay).toFixed(2) %></td>
+                                                <td><%= dt.leaveHoursPerDay %></td>
+                                                <td><%= parseFloat(dt.overTime).toFixed(2) %></td>
+                                                <td><%= parseFloat(dt.underTime).toFixed(2) %></td>
+                                            </tr>
+                                        <% } %>
+                                    <% } %>
+                                <!--Xem tất cả summary-->
+                                <% } else { %>
+                                    <% for (let dt of summary) { %>
+                                        <tr>
+                                            <td><%= new Date(dt.date).toLocaleDateString('en-GB') %></td>
+                                            <td><%= parseFloat(dt.workHoursPerDay).toFixed(2) %></td>
+                                            <td><%= dt.leaveHoursPerDay %></td>
+                                            <td><%= parseFloat(dt.overTime).toFixed(2) %></td>
+                                            <td><%= parseFloat(dt.underTime).toFixed(2) %></td>
+                                        </tr>
+                                    <% } %>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+                <% if (mode == 'salary') { %>
+                    <h2>Tổng kết lương%></h2> 
+                    <div class="table-wrapper">
+                        <table class="fl-table">
+                            <thead>
+                                <tr>
+                                    <th>Tháng</th>
+                                    <th>Hệ số lương</th>
+                                    <th>Tổng số giờ làm thêm</th>
+                                    <th>Tổng số giờ làm thiếu</th>
+                                    <th>Lương</th>
+                                </tr>
+                            </thead>
+                                <tbody>
+                                <!--Có chọn THÁNG xem salary-->
+                                <% if (month) { %>
+                                    <% for (let ds of salary) { %>
+                                        <% if (ds.monthOfYear == month) { %>
+                                            <tr>
+                                                <td><%= ds.monthOfYear %></td>
+                                                <td><%= staff.salaryScale %></td>
+                                                <td><%= parseFloat(ds.totalOverTime).toFixed(2) %></td>
+                                                <td><%= parseFloat(ds.totalUnderTime).toFixed(2) %></td>
+                                                <td><%= (ds.salary).toLocaleString() %> VND</td>
+                                            </tr>
+                                        <% } %>
+                                    <% } %>
+                                <!--Xem tất cả salary-->
+                                <% } else { %>
+                                    <% for (let ds of salary) { %>
+                                        <tr>
+                                            <td><%= ds.monthOfYear %></td>
+                                            <td><%= staff.salaryScale %></td>
+                                            <td><%= parseFloat(ds.totalOverTime).toFixed(2) %></td>
+                                            <td><%= parseFloat(ds.totalUnderTime).toFixed(2) %></td>
+                                            <td><%= (ds.salary).toLocaleString() %> VND</td>
+                                        </tr>
+                                    <% } %>
+                                <% } %>
+                            </tbody>
+                        </table>
+                        <div class="card__content clearfix">
+                            <h3>Công thức tính lương:</h3>
+                            <div style="text-align: center"><code>Salary = salaryScale * 3.000.000 + (overTime - underTime) * 200.000</code></div>
+                            <h5>Lương được làm tròn lên số nguyên gần nhất hàng nghìn</h5>
+                        </div>
+                    </div>
+                <% } %>
+                <div class="grid">
+                    <!--Chức năng sort-->
+                    <% if (mode == 'details') { %>
+                        <article class="card product-item">
+                            <form class="product-form" action="/workinghours/search" method="POST">
+                                <div class="form-control">
+                                    <label for="sort">Sắp xếp</label>
+                                    <select name="sort" id="sort">
+                                        <% var sortList = ['ngày', 'nơi làm việc'];
+                                            for ( var i = 0; i < sortList.length; i++ ) {
+                                                let selected = ( sortList[i] == sort ) ? "selected" : ""
+                                        %>
+                                            <option value="<%=sortList[i] %>" <%=selected %>>Theo <%= sortList[i] %></option>
+                                        <% } %>
+                                    </select>
+                                    <input type="hidden" name="companyId" id="companyId" value="<%= staff.companyId %>">
+                                    <input type="hidden" name="keywords" id="keywords" value="<%=keywords%>">
+                                    <div class="card__actions">
+                                        <button class="btn" type="submit">Chọn</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </article>
+                    <% } else { %>
+                        <article class="card product-item">
+                            <form class="product-form">
+                                <div class="form-control">
+                                    <label for="sort">Sắp xếp</label>
+                                    <select name="sort" id="sort" disabled>
+                                        <option value="ngày" selected>Theo ngày</option>
+                                    </select>
+                                    <div class="card__actions">
+                                        <button class="btn disabled" type="submit" disabled>Chọn</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </article>
+                    <% } %>
+                    <!--Chức năng search-->
+                    <article class="card product-table">
+                        <form class="product-form" style="width: 100%" action="/workinghours/search" method="POST">
+                            <div class="form-control">
+                                <label for="keywords">Nhập từ khóa</label>
+                                <input 
+                                    class="<%= error ? 'invalid' : '' %>"
+                                    type="text" 
+                                    id ="keywords" 
+                                    name="keywords" 
+                                    placeholder="Enter keywords" 
+                                    value="<%= oldInput %>">
+                                <input type="hidden" name="companyId" id="companyId" value="<%= staff.companyId %>">
+                                <% if (errorMessage) { %>
+                                    <a class="btn danger" disabled><%= errorMessage %></a>
+                                <% } %>
+                                <div class="card__actions">
+                                    <button class="btn" type="submit">Tìm kiếm</button>
+                                </div>
+                            </div>
+                        </form>
+                    </article>
+                    <!--Hướng dẫn search-->
+                    <article class="card product-search">
+                        <div style="margin: 0 2rem">
+                            <div class="clearfix" style="margin: 1rem 0">
+                                <h3 style="float:left; margin: 0">Hướng dẫn cách sử dụng chức năng tìm kiếm</h3>
+                                <button class="btn" style="float:right" onclick="toogleText()">Ẩn/Hiện hướng dẫn</button>
+                            </div>
+                            <div id="toogleText" style="display: none">
+                                <ul><h4>Cú pháp: <code>chế_độ_tìm_kiếm + '&' + các_keywwords</code></h4>
+                                    <ul><h5 style="margin: 1rem 0">Chế độ tìm kiếm</h5>
+                                        <li> Chi tiết từng lần chấm công: mode=details </li>
+                                        <li> Tổng kết chấm công theo ngày: mode=summary </li>
+                                        <li> Xem lương tháng: mode=salary </li>
+                                    </ul>
+                                    <ul><h5 style="margin: 1rem 0">Các keywwords</h5>
+                                        <li> Tìm theo nơi làm việc: <code>workplace=Nhà</code> hoặc <code>workplace=Khách hàng</code> hoặc <code> workplace=Công ty </code></li>
+                                        <li> Tìm theo ngày làm việc (định dạng YYYY-MM-DD): <code>date=2022-06-21</code> </li>
+                                        <li> Tìm theo tháng làm việc: <code>month=04-2022</code>
+                                    </ul> 
+                                </ul>
+                                <h5><u>Lưu ý:</u> nếu nhập 2 chế độ tìm kiếm trở lên: chế độ cuối cùng sẽ được sử dụng, nếu nhập các keywords không đúng format sẽ không thể truy vấn đúng yêu cầu</h5>
+                                <p> Ví dụ 1: tìm kiếm các lần chấm công trong ngày 21-06-2022 tại Công ty </p>
+                                <code style="margin-left: 2rem">mode=details&date=2022-06-21&workplace=Công ty</code>
+                                <p> Ví dụ 2: tìm kiếm tổng kết chấm công trong ngày 20-06-2022 </p>
+                                <code style="margin-left: 2rem">mode=summary&date=2022-06-21</code>
+                                <p> Ví dụ 3: tìm kiếm lương tháng 6 </p>
+                                <code style="margin-left: 2rem">mode=salary&month=05-2022</code>
+                                
+                                <h5>Sau khi nhập xong, bấm nút Tìm kiếm để bắt đầu</h5>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </article>
+        </div>
+    </main>
+<%- include('../includes/end.ejs') %>

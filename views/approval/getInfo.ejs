@@ -1,0 +1,140 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navigation.ejs') %>
+    <main>
+        <% if (isAdmin) { %>
+            <div class="grid">
+                <article class="card product-item">
+                    <form class="product-form" action="/approval/getinfobymonth" method="POST">
+                        <div class='card__image c-avatar'>
+                            <img class='c-avatar__image' src='/<%= staff.imageUrl %>' alt='<%= staff.name %>'>
+                            <span class='c-avatar__status <% if(staff.status == "Đang làm việc") { %>online<% } else { %>offline<% } %>'></span>
+                        </div>
+                        <!--Input chỉ để hiển thị-->
+                        <div class="card__status clearfix">
+                            <input type="text" name="status" id="status" value="<%=staff.status ? staff.status : '--'%>" readonly>
+                        </div>
+                        <div class="form-control">
+                            <label for="companyId">Mã nhân viên</label>
+                            <input type="text" name="companyId" id="companyId" value="<%= staff.companyId %>" readonly>
+                        </div>
+                        <div class="form-control">
+                            <label for="name">Họ tên nhân viên</label>
+                            <input type="text" name="name" id="name" value="<%= staff.name %>" disabled>
+                        </div>
+                        <div class="form-control">
+                            <label for="annualLeave">Số ngày phép của năm</label>
+                            <input type="number" name="annualLeave" id="annualLeave" value="<%= staff.annualLeave %>" disabled>
+                        </div>
+                        <div class="form-control">
+                            <label for="salaryScale">Hệ số lương</label>
+                            <input type="number" name="salaryScale" id="salaryScale" value="<%= staff.salaryScale %>" disabled>
+                        </div>
+                        <div class="form-control">
+                            <label for="userAdmin">ID quản lý</label>
+                            <input type="text" name="userAdmin" id="userAdmin" value="<%= userAdmin.username %>" disabled>
+                        </div>
+                        <div class="form-control">
+                            <label for="monthOfYear">Chọn tháng</label>
+                            <select name="monthOfYear" id="monthOfYear">
+                                <% for ( var i = 0; i < monthList.length; i++ ) {
+                                    let selected = ( monthList[i] == monthOfYear ) ? "selected" : ""
+                                %>
+                                    <option value="<%=monthList[i] %>" <%=selected %>><%= monthList[i] %></option>
+                                <% } %>
+                            </select>
+                            <button class="btn" type="submit">Submit</button>
+                        </div>
+
+                        <!--Input của post controller-->
+                        <div class="form-control">
+                            <input type="hidden" name="staffId" value="<%= staff._id %>">
+                        </div>
+                        <div class="card__actions">
+                            <% if (!data.confirmedStatus) { %>
+                                <a style="width: 15rem; margin: 0.25rem" href="/approval/confirmdata/<%= staff.companyId %>?monthOfYear=<%= monthOfYear %>" class="btn danger">Xác nhận giờ làm</a>
+                            <% } else { %>
+                                <a style="width: 15rem; margin: 0.25rem; pointer-events: none;" href="" class="btn disabled">Xác nhận giờ làm</a>
+                                <a style="width: 15rem; margin: 0.25rem" href="/workinghours/summary/<%= staff.companyId %>?numberOfRow=10" class="btn">Xem tổng kết theo ngày</a>
+                            <% } %>
+                        </div>
+                    </form>
+                </article>
+                <article class="card product-table">
+                    <div>
+                    <% if (data.timekeeping.length >0) { %>
+                        <h2>Chi tiết chấm công trong ngày%></h2> 
+                        <div class="table-wrapper">
+                            <table class="fl-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ngày làm việc</th>
+                                        <th>Nơi làm việc</th>
+                                        <th  style="width:120px" >Giờ bắt đầu</th>
+                                        <th  style="width:120px" >Giờ kết thúc</th>
+                                        <th>Số giờ làm 1 lần chấm công</th>
+                                        <th>Số giờ đăng kí nghỉ trong ngày</th>
+                                        <th>Sửa thông tin</th>
+                                        <th>Xoá thông tin</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for (let dt of data.timekeeping) { %>
+                                        <% if (dt.monthOfYear == monthOfYear) { %>
+                                            <tr>
+                                                <form class="product-form" action="/approval/editdata" method="POST">
+                                                <td><%= moment(dt.date).utc().format('YYYY-MM-DD') %></td>
+                                                <td><%= dt.workplace %></td>
+                                                <% if (data.confirmedStatus) { %>
+                                                    <td><input type="time" name="timeStart" id="timeStart" value="<%= dt.timeStart %>" disabled></td>
+                                                    <td><input type="time" name="timeEnd" id="timeEnd" value="<%= dt.timeEnd ? dt.timeEnd : '' %>" disabled></td>
+                                                <% } else { %>
+                                                    <td><input type="time" name="timeStart" id="timeStart" value="<%= dt.timeStart %>" readonly></td>
+                                                    <td><input class="<%= (error && dt._id == timekeepingId) ? 'invalid' : '' %>" type="time" name="timeEnd" id="timeEnd" value="<%= dt.timeEnd ? dt.timeEnd : '' %>" step='1'></td>
+                                                <% } %>
+                                                <td><%= dt.timeEnd ? parseFloat(dt.workHours).toFixed(2) : 'chưa kết thúc' %></td>
+                                                <td><%= dt.leaveHours %></td>
+                                                <td>
+                                                    <input type="hidden" name="timekeepingId" id="timekeepingId" value="<%= dt._id %>">
+                                                    <input type="hidden" name="date" id="date" value="<%= moment(dt.date).utc().format('YYYY-MM-DD') %>">
+                                                    <input type="hidden" name="companyId" id="companyId" value="<%= data.companyId %>">
+                                                    <input type="hidden" name="workHours" id="workHours" value="<%= dt.workHours %>">
+                                                    <% if (data.confirmedStatus) { %>
+                                                        <button class="btn disabled" style="margin: 0" type="submit" disabled>Update</button>
+                                                    <% } else { %>
+                                                        <button class="btn" style="margin: 0" type="submit">Update</button>
+                                                    <% } %>
+                                                </td>
+                                                </form>
+                                                <td>
+                                                    <form action="/approval/deletedata" method="POST">
+                                                        <input type="hidden" name="timekeepingId" id="timekeepingId" value="<%= dt._id %>">
+                                                        <input type="hidden" name="date" id="date" value="<%= moment(dt.date).utc().format('YYYY-MM-DD') %>">
+                                                        <input type="hidden" name="companyId" id="companyId" value="<%= data.companyId %>">
+                                                        <input type="hidden" name="timeStart" id="timeStart" value="<%= dt.timeStart %>">
+                                                        <input type="hidden" name="workHours" id="workHours" value="<%= dt.workHours %>">
+                                                        <% if (data.confirmedStatus) { %>
+                                                            <input type="hidden" value="<%= staff.companyId %>" name="companyId">
+                                                            <button class="btn disabled" type="submit" disabled>Xóa</button>
+                                                        <% } else { %>
+                                                            <input type="hidden" value="<%= staff.companyId %>" name="companyId">
+                                                            <button class="btn danger" type="submit" >Xóa</button>
+                                                        <% } %>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } %>
+                    </div>
+                </article>
+                
+            </div>
+        <% } else { %>
+        <h1>Trang chỉ dành cho admin, vui lòng đăng nhập dưới tài khoản admin!</h1>
+        <% } %>
+
+    </main>
+<%- include('../includes/end.ejs') %>

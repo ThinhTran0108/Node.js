@@ -1,0 +1,62 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navigation.ejs') %>
+    <main>
+        <div class="grid">
+            <article class="card product-item">
+                <header class="card__header">
+                    <h1 class="product__title"><%= staff.name %></h1>
+                </header>
+                <hr>
+                <div class='card__image c-avatar'>
+                    <img class='c-avatar__image' src='/<%= staff.imageUrl %>' alt='<%= staff.name %>'>
+                    <span class='c-avatar__status <% if(staff.status == "Đang làm việc") { %>online<% } else { %>offline<% } %>'></span>
+                </div>
+                <div class="card__status clearfix">
+                    <input type="text" name="status" id="status" value="<%= staff.status %>" readonly>
+                </div>
+                <div class="card__content clearfix">
+                    <label for="companyId">Mã nhân viên</label>
+                    <input type="text" name="companyId" id="companyId" value="<%= staff.companyId %>" readonly>
+                </div>
+                <div class="card__content clearfix">
+                    <label for="role">Chức vụ</label>
+                    <input type="text" name="role" id="role" value="<%= staff.role %>" readonly>
+                </div>
+                <div class="card__content clearfix">
+                    <label for="doB">Ngày sinh</label>
+                    <input type="date" name="doB" id="doB" value="<%= moment(staff.doB).utc().format('YYYY-MM-DD') %>" readonly>
+                </div>
+                <div class="card__content clearfix">
+                    <label for="salaryScale">Hệ số lương</label>
+                    <input type="number" name="salaryScale" id="salaryScale" value="<%= staff.salaryScale %>" readonly>
+                </div>
+                <div class="card__content clearfix">
+                    <label for="startDate">Ngày bắt đầu làm việc</label>
+                    <input type="date" name="startDate" id="startDate" value="<%= moment(staff.startDate).utc().format('YYYY-MM-DD') %>" readonly>
+                </div>
+                <div class="card__content clearfix">
+                    <label for="department">Khoa phòng</label>
+                    <input type="text" name="department" id="department" value="<%= staff.department %>" readonly>
+                </div>
+                <div class="card__content clearfix">
+                    <label for="annualLeave">Số ngày phép còn lại</label>
+                    <input type="number" name="annualLeave" id="annualLeave" value="<%= staff.annualLeave %>" readonly>
+                </div>
+            </article>
+            <article class="card product-item">
+                <form class="product-form" action="/editstaff" method="POST" enctype="multipart/form-data">
+                    <div class="form-control">
+                        <label for="image">Hình đại diện</label>
+                        <input type="file" name="image" id="image">
+                    </div>
+                    <div class="card__actions">
+                        <input type="hidden" name="companyId" id="companyId" value="<%= staff.companyId %>">
+                        <button class="btn" type="submit">Cập nhật</button>
+                        <a class="btn" href="/">Quay lại</a>
+                    </div>
+                </form>
+            </article>
+        </div>
+        
+    </main>
+<%- include('../includes/end.ejs') %>

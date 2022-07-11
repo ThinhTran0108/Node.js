@@ -1,0 +1,25 @@
+.c-avatar {
+    position:relative;
+}
+.c-avatar__image {
+    width:100px;
+    height:100px;
+    object-fit:cover;
+    border-radius: 60%;
+
+}
+.c-avatar__status {
+    width:35px;
+    height:35px;
+    border:2px solid white;
+    position:absolute;
+    bottom:0%;
+    right:35%;
+    border-radius:100%;
+}
+.online {
+    background:#99CC00;
+}
+.offline{
+    background: gray;
+}

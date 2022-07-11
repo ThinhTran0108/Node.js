@@ -1,0 +1,89 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navigation.ejs') %>
+    <main>
+        <div class="grid">
+            <article class="card product-item">
+                <form class="product-form" action="/covid/positive" method="POST">
+                    <div class='card__image c-avatar'>
+                        <img class='c-avatar__image' src='/<%= staff.imageUrl %>' alt='<%= staff.name %>'>
+                        <span class='c-avatar__status <% if(staff.status == "Đang làm việc") { %>online<% } else { %>offline<% } %>'></span>
+                    </div>
+                    <!--Input chỉ để hiển thị-->
+                    <div class="card__status clearfix">
+                        <input type="text" name="status" id="status" value="<%= staff.status %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="companyId">Mã nhân viên</label>
+                        <input type="text" name="companyId" id="companyId" value="<%= staff.companyId %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="name">Họ tên nhân viên</label>
+                        <input type="text" name="name" id="name" value="<%= staff.name %>" readonly>
+                    </div>
+                    <!--Input của post controller-->
+                    <% if (!isAdmin) { %>
+                        <div class="form-control">
+                            <input type="hidden" name="staffId" id="staffId" value="<%= staff._id %>">
+                        </div>
+                        <div class="form-control">
+                            <label for="datePositive">Ngày dương tính</label>
+                            <input 
+                                class="<%= validationErrors.find(e => e.param === 'datePositive') ? 'invalid' : '' %>"
+                                type="date" 
+                                name="datePositive" 
+                                id="datePositive"%>"
+                                value="<%= oldInput.datePositive %>">
+                        </div>
+                        <div class="form-control">
+                            <label for="treatmentPlace">Nơi điều trị</label>
+                            <input 
+                                class="<%= validationErrors.find(e => e.param === 'treatmentPlace') ? 'invalid' : '' %>"
+                                type="text" 
+                                name="treatmentPlace" 
+                                id="treatmentPlace" 
+                                value="<%= oldInput.treatmentPlace %>">
+                        </div>
+                        <div class="form-control">
+                            <label for="treatmentTime">Số ngày nghỉ</label>
+                            <input 
+                                class="<%= validationErrors.find(e => e.param === 'treatmentTime') ? 'invalid' : '' %>"
+                                type="number" 
+                                name="treatmentTime" 
+                                id="treatmentTime" 
+                                value="<%= oldInput.treatmentTime %>">
+                        </div>
+                        <% if (errorMessage) { %>
+                            <div class="user-message user-message--error"><%= errorMessage %></div>
+                        <% } %>
+                        <div class="card__actions">
+                            <button class="btn" type="submit">Đăng ký</button>
+                        </div>
+                    <% } %>
+                </form>
+            </article>
+            <article class="card product-table">
+                <h2>Dữ liệu dương tính COVID</h2> 
+                <div class="table-wrapper">
+                    <table class="fl-table">
+                        <thead>
+                            <tr>
+                                <th>Ngày dương tính</th>
+                                <th>Nơi điều trị</th>
+                                <th>Số ngày nghỉ</th>
+                            </tr>
+                        </thead>
+                            <tbody>
+                            <% if (data.positive.length >0) { for (let dp of data.positive) { %>
+                                <tr>
+                                    <td><%= new Date(dp.datePositive).toLocaleDateString('en-GB') %></td>
+                                    <td><%= dp.treatmentPlace %></td>
+                                    <td><%= dp.treatmentTime %></td>
+                                </tr>
+                            <% }} %>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </div>
+    </main>
+<%- include('../includes/end.ejs') %>

@@ -1,0 +1,100 @@
+</head>
+<body>
+    <div class="backdrop"></div>
+    <header class="main-header">
+        <button id="side-menu-toggle">Menu</button>
+        <nav class="main-header__nav">
+            <ul class="main-header__item-list">
+                <li class="main-header__item">
+                    <a class="<%= path === '/staffinfo' ? 'active' : '' %>" href="/">Thông tin cá nhân</a>
+                </li>
+                <li class="main-header__item">
+                    <a class="<%= path === '/timekeeping' ? 'active' : '' %>" href="/timekeeping">Chấm công</a>
+                </li>
+                <li class="main-header__item">
+                    <a class="<%= path === '/covid' ? 'active' : '' %>" href="/covid">Thông tin COVID
+                    </a>
+                </li>
+                
+                <li class="main-header__item">
+                    <a class="<%= path === '/workinghours' ? 'active' : '' %>" href="/workinghours">Tra cứu giờ làm
+                    </a>
+                </li>
+                <% if ( isAdmin ) { %>
+                <li class="main-header__item">
+                    <a class="<%= path === '/approval' ? 'active' : '' %>" href="/approval">Xác nhận giờ làm
+                    </a>
+                </li>
+                <% } %>
+            </ul>
+            <ul class="main-header__item-list">
+                <% if (!isAuthenticated) { %>
+                    <li class="main-header__item">
+                        <a class="<%= path === '/login' ? 'active' : '' %>" href="/login">Đăng nhập</a>
+                    </li>
+                <% } else { %>
+                    <li class="main-header__item">
+                        <a href=""><%= user.username %>  <i class="fa fa-caret-down" style="font-size:20px;color:white;"></i></a>
+                    </li>
+                    <% if ( isAdmin ) { %>
+                        <li class="main-header__item">
+                            <a class="<%= path === '/signup' ? 'active' : '' %>" href="/signup">Đăng ký</a>
+                        </li>
+                    <% } %>
+                    <li class="main-header__item">
+                        <form action="/logout" method="post">
+                            <button type="submit">Đăng xuất</button>
+                        </form>
+                    </li>
+                <% } %>
+            </ul>
+        </nav>
+    </header>
+
+    <nav class="mobile-nav">
+        <ul class="mobile-nav__item-list">
+            <li class="mobile-nav__item">
+                <a class="<%= path === '/staffinfo' ? 'active' : '' %>" href="/">Thông tin cá nhân</a>
+            </li>
+            <li class="mobile-nav__item">
+                <a class="<%= path === '/timekeeping' ? 'active' : '' %>" href="/timekeeping">Chấm công</a>
+            </li>
+            <li class="mobile-nav__item">
+                <a class="<%= path === '/covid' ? 'active' : '' %>" href="/covid">Thông tin COVID
+                </a>
+            </li>
+            
+            <li class="mobile-nav__item">
+                <a class="<%= path === '/workinghours' ? 'active' : '' %>" href="/workinghours">Tra cứu giờ làm
+                </a>
+            </li>
+            <% if ( isAdmin ) { %>
+            <li class="mobile-nav__item">
+                <a class="<%= path === '/approval' ? 'active' : '' %>" href="/approval">Xác nhận giờ làm
+                </a>
+            </li>           
+            <% } %>
+            <% if (!isAuthenticated) { %>
+                <li class="mobile-nav__item">
+                    <a class="<%= path === '/login' ? 'active' : '' %>" href="/login">Đăng nhập</a>
+                </li>
+            <% } else { %>
+                <li class="mobile-nav__item">
+                    <a href=""><%= user.username %><i class="fa fa-caret-down" style="font-size:60px;color:white;"></i></a>
+                </li>
+                <% if ( isAdmin ) { %>
+                <li class="mobile-nav__item">
+                    <a class="<%= path === '/signup' ? 'active' : '' %>" href="/signup">Đăng ký</a>
+                </li>
+                <% } %>
+                <li class="mobile-nav__item">
+                    <form action="/logout" method="post">
+                        <button type="submit">Đăng xuất</button>
+                    </form>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+    <!-- <% if(pageTitle != 'Page Not Found!') { %>
+        <h2 id="animated_div">Chào mừng bạn đến với trang <%= pageTitle %></h2>
+    <% } %> -->

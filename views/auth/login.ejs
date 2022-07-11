@@ -1,0 +1,30 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navigation.ejs') %>
+    <main>
+        <% if (errorMessage) { %>
+            <div class="user-message user-message--error"><%= errorMessage %></div>
+        <% } %>
+        <form class="login-form" action="/login" method="POST">
+            <div class="form-control">
+                <label for="username">Tên đăng nhập</label>
+                <input
+                    class="<%= validationErrors.find(e => e.param === 'username') ? 'invalid' : '' %>"
+                    type="text"
+                    name="username"
+                    id="username"
+                    value="admin-1">
+            </div>
+            <div class="form-control">
+                <label for="password">Mật khẩu</label>
+                <input 
+                    class="<%= validationErrors.find(e => e.param === 'password') ? 'invalid' : '' %>"
+                    type="password" 
+                    name="password" 
+                    id="password" 
+                    value="1">
+            </div>
+        
+            <button class="btn" type="submit">Đăng nhập</button>
+        </form>
+    </main>
+<%- include('../includes/end.ejs') %>

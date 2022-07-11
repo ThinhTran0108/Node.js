@@ -1,0 +1,91 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navigation.ejs') %>
+    <main>
+        <div class="grid">
+            <article class="card product-item">
+                <form class="product-form" action="/timekeeping/checkin" method="POST">
+                    <div class='card__image c-avatar'>
+                        <img class='c-avatar__image' src='/<%= staff.imageUrl %>' alt='<%= staff.name %>'>
+                        <span class='c-avatar__status <% if(staff.status == "Đang làm việc") { %>online<% } else { %>offline<% } %>'></span>
+                    </div>
+                    <!--Input chỉ để hiển thị-->
+                    <div class="card__status clearfix">
+                        <input type="text" name="status" id="status" value="<%= staff.status %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="companyId">Mã nhân viên</label>
+                        <input type="text" name="companyId" id="companyId" value="<%= staff.companyId %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="name">Họ tên nhân viên</label>
+                        <input type="text" name="name" id="name" value="<%= staff.name %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="annualLeave">Số ngày phép của năm</label>
+                        <input type="number" name="annualLeave" id="annualLeave" value="<%= staff.annualLeave %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="salaryScale">Hệ số lương</label>
+                        <input type="number" name="salaryScale" id="salaryScale" value="<%= staff.salaryScale %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="date">Ngày làm việc</label>
+                        <input type="date" name="date" id="date" value="<%= data.timekeeping.length >0 ? moment(data.timekeeping[data.timekeeping.length -1].date).utc().format('YYYY-MM-DD') : moment().utc().format('YYYY-MM-DD') %>">
+                    </div>
+                    <!--Input của post controller-->
+                    <div class="form-control">
+                        <input type="hidden" name="staffId" value="<%= staff._id %>">
+                    </div>
+                    <div class="form-control">
+                        <label for="workplace">Nơi làm việc</label>
+                        <select name="workplace" id="workplace">
+                            <option value="Công ty" selected>Công ty</option>
+                            <option value="Nhà">Nhà</option>
+                            <option value="Khách hàng">Khách hàng</option>
+                        </select>
+                    </div>
+                    <% if (data.timekeeping.length >0) { %>
+                        <% if (data.timekeeping[data.timekeeping.length -1].timeEnd == null) { %>
+                            <div class="card__actions">
+                                <a href="/timekeeping/checkout/<%= staff.companyId %>" class="btn">Đi đến Kết thúc làm</a>
+                            </div>
+                        <% } else { %>
+                            <div class="card__actions">
+                                <button class="btn" type="submit">Điểm danh</button>
+                            </div>
+                        <% } %>
+                    <% } else { %>
+                        <div class="card__actions">
+                            <button class="btn" type="submit">Điểm danh</button>
+                        </div>
+                    <% } %>
+                </form>
+            </article>
+            <article class="card product-table">
+                <h2>Dữ liệu điểm danh</h2> 
+                <div class="table-wrapper">
+                    <table class="fl-table">
+                        <thead>
+                            <tr>
+                                <th>Ngày</th>
+                                <th>Giờ bắt đầu</th>
+                                <th>Nơi làm việc</th>
+                            </tr>
+                        </thead>
+                            <tbody>
+                            <% if (data.timekeeping.length >0) { 
+                                for (let tp of data.timekeeping) { 
+                            %>
+                                <tr>
+                                    <td><%= new Date(tp.date).toLocaleDateString('en-GB') %></td>
+                                    <td><%= tp.timeStart %></td>
+                                    <td><%= tp.workplace %></td>
+                                </tr>
+                            <% }} %>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </div>
+    </main>
+<%- include('../includes/end.ejs') %>

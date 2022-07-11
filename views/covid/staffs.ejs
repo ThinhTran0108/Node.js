@@ -1,0 +1,86 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navigation.ejs') %>
+    <main> 
+        <% for (let data of staffs) { %>
+        <div class="form-control">
+            <div class="clearfix">
+                <a style="float: left; margin-left: 1rem; pointer-events: none;" class="btn"><%= data.name %></a>
+                <a style="float: left; margin-left: 1rem; pointer-events: none;" class="btn"><%= data.companyId %></a>
+                <a style="float: left; margin-left: 1rem" href="/covid/download/<%= data.companyId %>" class="btn">Download thông tin Covid</a>
+            </div>
+            <div class="grid">
+                <article class="card product-item">
+                    <h2>Dữ liệu thân nhiệt</h2> 
+                    <div class="table-wrapper">
+                        <table class="fl-table">
+                            <thead>
+                                <tr>
+                                    <th>Ngày đo</th>
+                                    <th>Nhiệt độ</th>
+                                </tr>
+                            </thead>
+                                <tbody>
+                                <% if (data.bodyTemp.length >0) { for (let db of data.bodyTemp) { %>
+                                    <tr>
+                                        <td><%= new Date(db.dateTemp).toLocaleDateString('en-GB') %></td>
+                                        <td><%= db.temp %></td>
+                                    </tr>
+                                <% }} %>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+                <article class="card product-item">
+                    <h2>Dữ liệu Vaccine</h2> 
+                    <div class="table-wrapper">
+                        <table class="fl-table">
+                            <thead>
+                                <tr>
+                                    <th>Ngày tiêm mũi 1</th>
+                                    <th>Tên vaccine mũi 1</th>
+                                    <th>Ngày tiêm mũi 2</th>
+                                    <th>Tên vaccine mũi 2</th>
+                                </tr>
+                            </thead>
+                                <tbody>
+                                <% if (data.vaccine.dateVac_1 && data.vaccine.dateVac_2) {  %>
+                                    <tr>
+                                        <td><%= new Date(data.vaccine.dateVac_1).toLocaleDateString('en-GB') %></td>
+                                        <td><%= data.vaccine.vac_1 %></td>
+                                        <td><%= new Date(data.vaccine.dateVac_2).toLocaleDateString('en-GB') %></td>
+                                        <td><%= data.vaccine.vac_2 %></td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+                <article class="card product-item">
+                    <h2>Dữ liệu dương tính COVID</h2> 
+                    <div class="table-wrapper">
+                        <table class="fl-table">
+                            <thead>
+                                <tr>
+                                    <th>Ngày dương tính</th>
+                                    <th>Nơi điều trị</th>
+                                    <th>Số ngày nghỉ</th>
+                                </tr>
+                            </thead>
+                                <tbody>
+                                <% if (data.positive.length >0) { for (let dp of data.positive) { %>
+                                    <tr>
+                                        <td><%= new Date(dp.datePositive).toLocaleDateString('en-GB') %></td>
+                                        <td><%= dp.treatmentPlace %></td>
+                                        <td><%= dp.treatmentTime %></td>
+                                    </tr>
+                                <% }} %>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </div>
+        </div>
+        <hr>
+        <% } %>
+    </main>
+<%- include('../includes/end.ejs') %>

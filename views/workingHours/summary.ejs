@@ -1,0 +1,138 @@
+<%- include('../includes/head.ejs') %>
+<%- include('../includes/navigation.ejs') %>
+    <main>
+        <div class="grid">
+            <article class="card product-item">
+                <form class="product-form" action="/workinghours/getworkinginfo" method="POST">
+                    <div class='card__image c-avatar'>
+                        <img class='c-avatar__image' src='/<%= staff.imageUrl %>' alt='<%= staff.name %>'>
+                        <span class='c-avatar__status <% if(staff.status == "Đang làm việc") { %>online<% } else { %>offline<% } %>'></span>
+                    </div>
+                    <!--Input chỉ để hiển thị-->
+                    <div class="card__status clearfix">
+                        <input type="text" name="status" id="status" value="<%=staff.status ? staff.status : '--'%>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="companyId">Mã nhân viên</label>
+                        <input type="text" name="companyId" id="companyId" value="<%= staff.companyId %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="name">Họ tên nhân viên</label>
+                        <input type="text" name="name" id="name" value="<%= staff.name %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="annualLeave">Số ngày phép của năm</label>
+                        <input type="number" name="annualLeave" id="annualLeave" value="<%= staff.annualLeave %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="salaryScale">Hệ số lương</label>
+                        <input type="number" name="salaryScale" id="salaryScale" value="<%= staff.salaryScale %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="userAdmin">ID quản lý</label>
+                        <input type="text" name="userAdmin" id="userAdmin" value="<%= userAdmin.username %>" readonly>
+                    </div>
+                    <div class="form-control">
+                        <label for="monthOfYear">Chọn tháng</label>
+                        <select name="monthOfYear" id="monthOfYear" disabled>
+                            <option value="<%=monthOfYear %>" selected><%= monthOfYear %></option>
+                        </select>
+                        <button class="btn disabled" type="submit" disabled>Chọn</button>
+                    </div>
+                    <!--Input của post controller-->
+                    <div class="form-control">
+                        <input type="hidden" name="staffId" value="<%= staff._id %>">
+                    </div>
+                    <% if (!confirmedStatus) { %>
+                        <div class="card__actions">
+                            <a class="btn danger" style="pointer-events: none;" href='' disabled> Dữ liệu chưa được xác nhận bởi quản lý! Số liệu tổng kết theo ngày và lương tháng có thể không chính xác</a>
+                        </div>
+                    <% } %>
+                    <div class="card__actions">
+                        <a style="width: 15rem; margin: 0.25rem" href="/workinghours/details/<%= staff.companyId %>?sort=ngày&numberOfRow=10" class="btn">Chi tiết</a>
+                        <a style="width: 15rem; margin: 0.25rem" href="/workinghours/salary/<%= staff.companyId %>" class="btn">Lương tháng</a>
+                    </div>
+                </form>
+            </article>
+            <article class="card product-table">
+                <h2>Tổng kết giờ làm</h2> 
+                <div class="table-wrapper">
+                    <table class="fl-table">
+                        <thead>
+                            <tr>
+                                <th>Ngày làm việc</th>
+                                <th>Tổng số giờ làm trong ngày</th>
+                                <th>Số giờ đăng kí nghỉ</th>
+                                <th>Số giờ làm thêm</th>
+                                <th>Số giờ làm thiếu</th>
+                            </tr>
+                        </thead>
+                            <tbody>
+                            <% for (let dt of summary) { %>
+                                <tr>
+                                    <td><%= new Date(dt.date).toLocaleDateString('en-GB') %></td>
+                                    <td><%= parseFloat(dt.workHoursPerDay).toFixed(2) %></td>
+                                    <td><%= dt.leaveHoursPerDay %></td>
+                                    <td><%= parseFloat(dt.overTime).toFixed(2) %></td>
+                                    <td><%= parseFloat(dt.underTime).toFixed(2) %></td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+                <!--Chức năng phân trang-->
+                <section class="pagination">
+                    <% if (currentPage !== 1 && previousPage !== 1) { %>
+                        <a href="/workinghours/summary/<%= staff.companyId %>?&page=1&numberOfRow=<%= numberOfRow %>">1</a>
+                    <% } %>
+                    <% if (hasPreviousPage) { %>
+                        <a href="/workinghours/summary/<%= staff.companyId %>?page=<%= previousPage %>&numberOfRow=<%= numberOfRow %>"><%= previousPage %></a>
+                    <% } %>
+                        <a href="/workinghours/summary/<%= staff.companyId %>?page=<%= currentPage %>&numberOfRow=<%= numberOfRow %>" class="active"><%= currentPage %></a>
+                    <% if (hasNextPage) { %>
+                        <a href="/workinghours/summary/<%= staff.companyId %>?page=<%= nextPage %>&numberOfRow=<%= numberOfRow %>"><%= nextPage %></a>
+                    <% } %>
+                    <% if (lastPage !== currentPage && nextPage !== lastPage) { %>
+                        <a href="/workinghours/summary/<%= staff.companyId %>?page=<%= lastPage %>&numberOfRow=<%= numberOfRow %>"><%= lastPage %></a>                
+                    <% } %>
+                </section>
+                <div class="grid">
+                    <!--Chức năng chọn số dòng hiển thị-->
+                    <article class="card product-item">
+                        <form class="product-form" action="/workinghours/summary" method="POST">
+                            <div class="form-control">
+                                <label for="numberOfRow">Chọn số dòng hiển thị</label>
+                                <select name="numberOfRow" id="numberOfRow">
+                                    <% var numberOfRowList = [5, 10, 20, 30];
+                                    for ( var i = 0; i < numberOfRowList.length; i++ ) {
+                                        let selected = ( numberOfRowList[i] == numberOfRow ) ? "selected" : ""
+                                    %>
+                                        <option value="<%=numberOfRowList[i] %>" <%=selected %>><%= numberOfRowList[i] %> dòng</option>
+                                    <% } %>
+                                </select>
+                                <input type="hidden" name="companyId" id="companyId" value="<%= staff.companyId %>">
+                                <div class="card__actions">
+                                    <button class="btn" type="submit">Chọn</button>
+                                </div>
+                            </div>
+                        </form>
+                    </article>
+                    <!--Chức năng search-->
+                    <article class="card product-search">
+                        <form class="product-form" style="width: 100%" action="/workinghours/search" method="POST">
+                            <div class="form-control">
+                                <label for="keywords">Nhập từ khóa</label>
+                                <input id ="keywords" name="keywords" placeholder="Enter keywords" value="">
+                                <input type="hidden" name="companyId" id="companyId" value="<%= staff.companyId %>">
+                                <div class="card__actions">
+                                    <button class="btn" type="submit">Tìm</button>
+                                    <a href="/workinghours/search/<%= staff.companyId %>" class="btn">Help</a>
+                                </div>
+                            </div>
+                        </form>
+                    </article>
+                </div>
+            </article>
+        </div>
+    </main>
+<%- include('../includes/end.ejs') %>
